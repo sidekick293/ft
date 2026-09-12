@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:5000"
     volumes:
-      - ./data:/data
+      - /volume1/docker/fitness-tracker/data:/data
     environment:
       - PERSON_A_NAME=${PERSON_A_NAME:-user1}
       - PERSON_B_NAME=${PERSON_B_NAME:-user2}

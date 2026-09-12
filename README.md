@@ -12,7 +12,19 @@ werden. Absicherung muss extern erfolgen, z. B.:
   kombiniert mit dem Synology-Anmeldeportal, oder
 - Zugriff nur über VPN (z. B. Tailscale) freigeben.
 
-## Setup
+## Setup (Portainer, Deployment via Git-Repository)
+
+1. Auf dem NAS einmalig den Ordner `/volume1/docker/fitness-tracker/data` anlegen
+   (z. B. per File Station) – das ist der Bind-Mount-Zielordner für die Datenbank.
+2. In Portainer: **Stacks → Add stack**, Build method **Repository**, diese
+   Repo-URL eintragen, Compose-Pfad `docker-compose.yml`.
+3. Unter **Environment variables** `PERSON_A_NAME` und `PERSON_B_NAME` setzen
+   (steht nicht im Repo, siehe `.env.example` als Vorlage).
+4. **Deploy the stack**.
+
+Die Seite ist danach unter `http://<nas-ip>:8080` erreichbar.
+
+## Setup (lokal, ohne Portainer)
 
 ```bash
 cp .env.example .env
@@ -20,20 +32,20 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Die Seite ist danach unter `http://<nas-ip>:8080` erreichbar.
+Hinweis: `docker-compose.yml` verwendet aktuell den festen NAS-Pfad
+`/volume1/docker/fitness-tracker/data`. Für rein lokale Tests auf einem anderen
+Rechner diesen Pfad temporär auf `./data` zurückändern.
 
 ## Daten
 
-Die SQLite-Datenbank liegt unter `./data/fitness.db` (Bind-Mount) und bleibt bei
-`docker compose down`/`up` sowie Updates erhalten. Für Backups reicht es, diese
-Datei zu sichern.
+Die SQLite-Datenbank liegt unter `/volume1/docker/fitness-tracker/data/fitness.db`
+(Bind-Mount) und bleibt bei Stack-Neudeploys/Updates erhalten. Für Backups reicht
+es, diese Datei bzw. den Ordner zu sichern.
 
 ## Update
 
-```bash
-git pull
-docker compose up -d --build
-```
+Code-Änderungen committen und pushen, danach in Portainer den Stack öffnen und
+**Pull and redeploy** klicken (oder Webhook einrichten).
 
 ## Lokale Entwicklung ohne Docker
 
