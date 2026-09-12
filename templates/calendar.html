@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="month-nav">
+  <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}" class="nav-btn">&lt;</a>
+  <h1>{{ month_name }} {{ year }}</h1>
+  <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}" class="nav-btn">&gt;</a>
+  <a href="{{ url_for('calendar_view', year=today_year, month=today_month) }}" class="today-link">Heute</a>
+</header>
+
+<div class="calendar">
+  <div class="row header-row">
+    <div class="col date-col"></div>
+    <div class="col person-col">
+      {{ person_a_name }}
+      <span class="streak-badge streak-{{ streak_a.tier }}">🔥 {{ streak_a.length }}</span>
+      {% if month_complete_a %}<span class="badge-icon" title="Kompletter Monat">🏆</span>{% endif %}
+    </div>
+    <div class="col person-col">
+      {{ person_b_name }}
+      <span class="streak-badge streak-{{ streak_b.tier }}">🔥 {{ streak_b.length }}</span>
+      {% if month_complete_b %}<span class="badge-icon" title="Kompletter Monat">🏆</span>{% endif %}
+    </div>
+  </div>
+
+  {% for row in day_rows %}
+  <div class="row day-row{% if row.is_today %} today{% endif %}{% if row.is_weekend %} weekend{% endif %}{% if row.team_week %} team-week{% endif %}">
+    <div class="col date-col">
+      <span class="day-number">{{ row.day }}</span>
+      <span class="weekday">{{ row.weekday_name }}</span>
+    </div>
+    <div class="col person-col entries-cell{% if row.in_streak_a %} streak-cell streak-{{ streak_a.tier }}{% endif %}" data-date="{{ row.date_iso }}" data-person="a">
+      <div class="entries">
+        {% for entry in row.entries_a %}
+        <span class="chip" data-id="{{ entry.id }}">{{ entry.text }}<button class="del-btn" data-id="{{ entry.id }}" aria-label="Löschen">&times;</button></span>
+        {% endfor %}
+      </div>
+      <button class="add-btn" aria-label="Eintrag hinzufügen">+</button>
+    </div>
+    <div class="col person-col entries-cell{% if row.in_streak_b %} streak-cell streak-{{ streak_b.tier }}{% endif %}" data-date="{{ row.date_iso }}" data-person="b">
+      <div class="entries">
+        {% for entry in row.entries_b %}
+        <span class="chip" data-id="{{ entry.id }}">{{ entry.text }}<button class="del-btn" data-id="{{ entry.id }}" aria-label="Löschen">&times;</button></span>
+        {% endfor %}
+      </div>
+      <button class="add-btn" aria-label="Eintrag hinzufügen">+</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<section class="trophy-shelf">
+  <h2>Abzeichen</h2>
+  {% if badges %}
+  <div class="badges">
+    {% for badge in badges %}
+    <span class="badge-chip">{{ badge.icon }} {{ badge.label }}</span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="no-badges">Noch keine Abzeichen – bleibt dran!</p>
+  {% endif %}
+</section>
+{% endblock %}
